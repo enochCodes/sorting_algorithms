@@ -1,79 +1,68 @@
-#include <stdio.h>
 #include "sort.h"
 
-/* Function prototypes */
-void quick_sort_recursive(int *array, int low, int high, size_t size);
-int partition(int *array, int low, int high, size_t size);
-void swap(int *a, int *b);
-
 /**
- * quick_sort - Sorts an array of integers in ascending order using Quick sort
- * @array: The array to be sorted
- * @size: The size of the array
+ * partition - array partition
+ * @array: array to sort
+ * @first: first position
+ * @last: last position
+ * @size: array size
+ * Return: int pivot index
  */
-void quick_sort(int *array, size_t size)
+int partition(int *array, int first, int last, size_t size)
 {
-	if (array == NULL || size < 2)
-		return;
+	int i = first - 1, aux, j;
 
-	quick_sort_recursive(array, 0, size - 1, size);
-}
-
-/**
- * quick_sort_recursive - Recursive function to perform Quick sort
- * @array: The array to be sorted
- * @low: The low index of the partition being sorted
- * @high: The high index of the partition being sorted
- * @size: The size of the array
- */
-void quick_sort_recursive(int *array, int low, int high, size_t size)
-{
-	if (low < high)
+	for (j = first; j <= last - 1; j++)
 	{
-		int pivot_index = partition(array, low, high, size);
-
-		quick_sort_recursive(array, low, pivot_index - 1, size);
-		quick_sort_recursive(array, pivot_index + 1, high, size);
-	}
-}
-
-/**
- * partition - Chooses the last element as pivot and partitions the array
- * @array: The array to be partitioned
- * @low: The low index of the partition
- * @high: The high index of the partition
- * @size: The size of the array
- *
- * Return: The index of the pivot element
- */
-int partition(int *array, int low, int high, size_t size)
-{
-	int pivot = array[high];
-	int i = low - 1;
-	int j;
-
-	for (j = low; j <= high - 1; j++)
-	{
-		if (array[j] < pivot)
+		if (array[j] < array[last])
 		{
 			i++;
-			swap(&array[i], &array[j]);
-			print_array(array, size);
+			if (i < j)
+			{
+				aux = array[i];
+				array[i] = array[j];
+				array[j] = aux;
+				print_array(array, size);
+			}
 		}
 	}
-	swap(&array[i + 1], &array[high]);
+	if (array[i + 1] > array[last])
+	{
+		aux = array[i + 1];
+		array[i + 1] = array[last];
+		array[last] = aux;
+		print_array(array, size);
+	}
+
 	return (i + 1);
 }
 
 /**
- * swap - Swaps two integers
- * @a: Pointer to the first integer
- * @b: Pointer to the second integer
+ * qs - sorts an array of integers recursively
+ * @array: array to sort
+ * @first: first position
+ * @last: last position
+ * @size: array size
  */
-void swap(int *a, int *b)
+void qs(int *array, int first, int last, size_t size)
 {
-	int temp = *a;
-	*a = *b;
-	*b = temp;
+	int pivot;
+
+	if (first < last)
+	{
+		pivot = partition(array, first, last, size);
+		qs(array, first, pivot - 1, size);
+		qs(array, pivot + 1, last, size);
+	}
 }
 
+/**
+ * quick_sort - sorts an array of integers using the Quick
+ * sort algorithm in ascending order
+ * @array: array to sort
+ * @size: array size
+ */
+void quick_sort(int *array, size_t size)
+{
+	qs(array, 0, size - 1, size);
+}
